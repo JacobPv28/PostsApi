@@ -1,15 +1,13 @@
 'use strict'
 const express = require("express");
-const router = express.Routeri();
-const ElementPost = require("../models/element.post");
+const router = express.Router();
+const {getPost,getPosts,createPost,updatePost,deletePost} = require('../controllers/post.controller');
 
 //Controllers
-router.get('/', async (req, res) => {
-     try {
-        const post = await ElementPost.create(req.body);
-        res.status(200).json(post);
+router.get('/', getPosts);
+router.get('/:id', getPost);
+router.post('/', createPost);
+router.put('/:id', updatePost);
+router.delete('/:id', deletePost);
 
-    } catch (error) {
-        res.status(500).json({message: error.message});
-    };
-});
+module.exports = router;

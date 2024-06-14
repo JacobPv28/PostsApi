@@ -1,10 +1,16 @@
 'use strict'
 const express = require('express');
 const mongoose = require('mongoose');
-const ElementPost = require('./models/element.post');
-const PORT = 8000;
+const postsRoute = require("./routes/post.route");
 
-const uri = "mongodb+srv://testUser:rAsB0C2LcJRSQRQL@apirestdb.ffzhajw.mongodb.net/?retryWrites=true&w=majority&appName=ApiRestDb";
+//Environment variables
+require('dotenv').config();
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
+const PORT = process.env.PORT || 3000; // || 3000 alternative port in case assigned port won't work
+
+//Mongoose connection
+const uri = `mongodb+srv://${dbUser}:${dbPassword}@apirestdb.ffzhajw.mongodb.net/?retryWrites=true&w=majority&appName=ApiRestDb`;
 const clientOptions = { serverApi: { version: '1', strict: true, deprecationErrors: true } };
 
 async function run() {
@@ -24,69 +30,10 @@ run().catch(console.dir);
 const app = express();
 app.use(express.json());
 
+// ROUTES
+app.use("/api/posts", postsRoute);
 app.get('/v1', (req, res) => {
-    res.send("This API is working better than expected.")
-});
-
-//Routes
-app.use("/api/elements", elementPostRoute);
-
- app.post('/api/elements', async (req, res) => {
-   
-});
-
-app.get('/api/elements', async (req, res) => {
-  try {
-    const post = await ElementPost.find({});
-    res.status(200).json(post);
-  }catch {
-    res.status(500).json({message:error.message});
-  }
-});
-
-//Getting the id
-app.get('/api/element/:id', async (req, res) => {
-  try {
-    const {id} = req.params;
-    const post = await ElementPost.findById(id);
-    res.status(200).json(post);
-    
-  }catch {
-    res.status(500).json({message:error.message});
-  }
-});
-
-app.put('/api/element/:id', async (req, res) => {
-  try {
-    const {id} = req.params;
-    const post = await ElementPost.findByIdAndUpdate(id, req.body);
-
-    if (!post) {
-      return res.status(404).json({message: "Post not found"});
-    };
-
-   const updatedPost = await ElementPost.findById(id);
-   res.status(200).json(updatedPost); 
-
-  }catch {
-    res.status(500).json({message:error.message});
-  }
-});
-
-app.delete('/api/element/:id', async (req, res) => {
-  try {
-    const {id} = req.params;
-    const post = await ElementPost.findByIdAndDelete(id);
-    
-    if (!post) {
-      return res.status(404).json({message: "Post not found"});
-    };
-
-    res.status(200).json({message: "Post deleted sucessfully"});
-
-  }catch {
-    res.status(500).json({message:error.message});
-  };
+    res.send("Api route working properly");
 });
 
 app.listen(PORT);
